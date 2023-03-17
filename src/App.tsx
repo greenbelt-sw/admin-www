@@ -1,38 +1,32 @@
-import * as React from "react"
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  theme,
-} from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Logo } from "./Logo"
+import { Box, ChakraProvider } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
+import Login from "./components/Login/Login";
+import theme from "./theme/index";
+import "./theme/styles.css";
 
-export const App = () => (
-  <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <ColorModeSwitcher justifySelf="flex-end" />
-        <VStack spacing={8}>
-          <Logo h="40vmin" pointerEvents="none" />
-          <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
-          </Text>
-          <Link
-            color="teal.500"
-            href="https://chakra-ui.com"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn Chakra
-          </Link>
-        </VStack>
-      </Grid>
-    </Box>
-  </ChakraProvider>
-)
+export const App = () => {
+  const [hashtag, setHashtag] = useState(window.location.hash);
+  const darkNav = window.location.hash === "#contact";
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash !== "#about-us") window.scrollTo(0, 0);
+      const hash = window.location.hash.split("?")[0];
+      setHashtag(hash);
+    };
+    window.onhashchange = handleHashChange;
+    return () => {
+      window.onhashchange = null;
+    };
+  }, []);
+  return (
+    <ChakraProvider theme={theme}>
+      <Box maxW={"100vw"} overflow={"hidden"}>
+        <Header dark={darkNav} />
+        <Login />
+        <Footer />
+      </Box>
+    </ChakraProvider>
+  );
+};
