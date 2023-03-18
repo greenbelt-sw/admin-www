@@ -1,5 +1,6 @@
 {
   "name": "greenbelt-admin",
+  "homepage": "https://greenbelt-sw.github.io/admin-www",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
