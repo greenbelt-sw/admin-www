@@ -1,18 +1,19 @@
-import { Box, ChakraProvider, ToastProvider } from "@chakra-ui/react";
+import React from "react";
+import { Box, ChakraProvider } from "@chakra-ui/react";
+import { Route, Routes } from "react-router-dom";
 import Login from "./components/Login/Login";
 import theme from "./theme/index";
 import "./theme/styles.css";
-import { Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Returns from "./components/Returns/Returns";
 import Users from "./components/Users/Users";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Settings from "./components/Settings/Settings";
+import PageNotFound from "./components/PageNotFound/PageNotFound";
 
 export const App = () => {
   return (
     <ChakraProvider theme={theme}>
-      <ToastProvider />
       <Box maxW={"100vw"} overflow={"hidden"}>
         <Routes>
           <Route
@@ -40,6 +41,14 @@ export const App = () => {
             }
           />
           <Route
+            path="/"
+            element={
+              <Sidebar>
+                <Dashboard />
+              </Sidebar>
+            }
+          />
+          <Route
             path="/settings"
             element={
               <Sidebar>
@@ -48,6 +57,7 @@ export const App = () => {
             }
           />
           <Route path="/login" element={<Login />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Box>
     </ChakraProvider>

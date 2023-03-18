@@ -22,10 +22,7 @@ import {
   useDisclosure,
   SimpleGrid,
   GridItem,
-  HStack,
-  useRadio,
-  useRadioGroup,
-  useToast,
+  Select,
 } from "@chakra-ui/react";
 import BreadcrumbHandler from "../BreadcrumbHandler/BreadcrumbHandler";
 
@@ -50,9 +47,17 @@ interface CompanyData {
   };
 }
 
+const statusOptions = [
+  { value: "received", label: "Received" },
+  { value: "processing", label: "Processing" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+  { value: "completed", label: "Completed" },
+];
+
 const companyData: CompanyData = {
   company: {
-    id: 1,
+    id: 43294292,
     name: "Greenbelt",
   },
   charities: [
@@ -191,77 +196,17 @@ const returns: Return[] = [
   },
 ];
 
-// 1. Create a component that consumes the `useRadio` hook
-function RadioCard(props: any) {
-  const { getInputProps, getCheckboxProps } = useRadio(props);
-
-  const input = getInputProps();
-  const checkbox = getCheckboxProps();
-
-  return (
-    <Box as="label">
-      <input {...input} />
-      <Box
-        {...checkbox}
-        cursor="pointer"
-        borderRadius="md"
-        _checked={{
-          bg: "green.400",
-          color: "white",
-        }}
-        px={3}
-        py={1}
-        fontSize={"sm"}
-      >
-        {props.children}
-      </Box>
-    </Box>
-  );
-}
-
-function StatusGroup({ returnObj }: { returnObj: Return }) {
-  const options = ["In Progress", "Complete", "Received"];
-
-  const toast = useToast();
-
-  const handleRadioClick = (value: string) => {
-    toast({
-      title: `Return ${returnObj.id}.${returnObj.orderId} status updated to "${value}"`,
-      description: `SKU#${returnObj.itemSku}: ${returnObj.quantity}x${returnObj.itemName}`,
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-      position: "top",
-    });
-  };
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: "framework",
-    defaultValue: returnObj.status,
-    onChange: handleRadioClick,
-  });
-
-  const group = getRootProps();
-
-  return (
-    <HStack {...group}>
-      {options.map((value) => {
-        const radio = getRadioProps({ value });
-        return (
-          <RadioCard
-            key={value}
-            {...radio}
-            onClick={() => handleRadioClick(value)}
-          >
-            {value}
-          </RadioCard>
-        );
-      })}
-    </HStack>
-  );
-}
-
 function ReturnsTable({ returns }: { returns: Return[] }) {
+  function handleRowClick(id: number): void {
+    const searchParams = new URLSearchParams();
+    searchParams.append("company", companyData.company.id.toString());
+    searchParams.append("return", id.toString());
+    const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+    window.history.pushState({ path: newUrl }, "", newUrl);
+
+    const event = new Event("popstate");
+    window.dispatchEvent(event);
+  }
   return (
     <TableContainer
       bgColor={"#fff"}
@@ -281,12 +226,31 @@ function ReturnsTable({ returns }: { returns: Return[] }) {
         </Thead>
         <Tbody>
           {returns.map((returnObj) => (
-            <Tr key={returnObj.id}>
+            <Tr
+              _hover={{
+                backgroundColor: "gray.100",
+                cursor: "pointer",
+              }}
+              transition={"background-color 0.1s ease"}
+              onClick={() => handleRowClick(returnObj.id)}
+              key={returnObj.id}
+            >
               <Td>{returnObj.id + "." + returnObj.orderId}</Td>
               <Td>{returnObj.itemName}</Td>
               <Td>{returnObj.returnReason}</Td>
               <Td isNumeric>
-                <StatusGroup returnObj={returnObj} />
+                <Select
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                  defaultValue={returnObj.status}
+                >
+                  {statusOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
               </Td>
             </Tr>
           ))}

@@ -50,9 +50,21 @@ const BreadcrumbHandler: React.FC = () => {
         </BreadcrumbItem>
       )}
 
-      {Object.entries(queryParams).map(([key, value]) => (
-        <BreadcrumbItem key={key} isCurrentPage>
-          <BreadcrumbLink href={`${breadcrumbLink}?${key}=${value}`}>
+      {Object.entries(queryParams).map(([key, value], index) => (
+        <BreadcrumbItem
+          key={key}
+          isCurrentPage={index === Object.entries(queryParams).length - 1}
+        >
+          <BreadcrumbLink
+            href={
+              index === 0
+                ? `${breadcrumbLink}?${key}=${value}`
+                : `${breadcrumbLink}?${Object.entries(queryParams)
+                    .slice(0, index + 1)
+                    .map(([k, v]) => `${k}=${v}`)
+                    .join("&")}`
+            }
+          >
             {capitalize(key)} {value}
           </BreadcrumbLink>
         </BreadcrumbItem>
