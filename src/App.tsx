@@ -1,31 +1,36 @@
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import Footer from "./components/Footer/Footer";
-import Header from "./components/Header/Header";
+import { Box, ChakraProvider, ToastProvider } from "@chakra-ui/react";
 import Login from "./components/Login/Login";
 import theme from "./theme/index";
 import "./theme/styles.css";
+import { Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Sidebar/Sidebar";
+import Returns from "./components/Returns/Returns";
+import Users from "./components/Users/Users";
 
 export const App = () => {
-  const [hashtag, setHashtag] = useState(window.location.hash);
-  const darkNav = window.location.hash === "#contact";
-  useEffect(() => {
-    const handleHashChange = () => {
-      if (window.location.hash !== "#about-us") window.scrollTo(0, 0);
-      const hash = window.location.hash.split("?")[0];
-      setHashtag(hash);
-    };
-    window.onhashchange = handleHashChange;
-    return () => {
-      window.onhashchange = null;
-    };
-  }, []);
   return (
     <ChakraProvider theme={theme}>
+      <ToastProvider />
       <Box maxW={"100vw"} overflow={"hidden"}>
-        <Header dark={darkNav} />
-        <Login />
-        <Footer />
+        <Routes>
+          <Route
+            path="/returns"
+            element={
+              <Sidebar>
+                <Returns />
+              </Sidebar>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <Sidebar>
+                <Users />
+              </Sidebar>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+        </Routes>
       </Box>
     </ChakraProvider>
   );
