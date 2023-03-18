@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.css": "/admin-www/static/css/main.f400bcd4.css",
+    "main.js": "/admin-www/static/js/main.a969dbe8.js",
+    "index.html": "/admin-www/index.html",
+    "main.a969dbe8.js.map": "/admin-www/static/js/main.a969dbe8.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f400bcd4.css",
+    "static/js/main.a969dbe8.js"
+  ]
+}
