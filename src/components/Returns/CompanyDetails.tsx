@@ -301,7 +301,9 @@ function EditCompanyDetails() {
 
   return (
     <>
-      <Button onClick={onOpen}>edit</Button>
+      <Button onClick={onOpen} size={"sm"}>
+        edit
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose} size={"2xl"}>
         <ModalOverlay />
         <ModalContent>

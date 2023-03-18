@@ -39,8 +39,16 @@ const BreadcrumbHandler: React.FC = () => {
       my={5}
     >
       <BreadcrumbItem>
-        <BreadcrumbLink href={breadcrumbLink}>{breadcrumbText}</BreadcrumbLink>
+        <BreadcrumbLink href={"/dashboard"}>Dashboard</BreadcrumbLink>
       </BreadcrumbItem>
+
+      {breadcrumbText !== "Dashboard" && (
+        <BreadcrumbItem>
+          <BreadcrumbLink href={breadcrumbLink}>
+            {breadcrumbText}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+      )}
 
       {Object.entries(queryParams).map(([key, value]) => (
         <BreadcrumbItem key={key} isCurrentPage>
