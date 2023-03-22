@@ -139,7 +139,7 @@ export default function ReturnDetails() {
                 <Input variant={"filled"} size={"sm"} defaultValue={charity} />
               </Td>
               <Td>
-                <Select defaultValue={status}>
+                <Select defaultValue={status} variant={"filled"} size={"sm"}>
                   {statusOptions.map(({ value, label }) => (
                     <option key={value} value={value}>
                       {label}

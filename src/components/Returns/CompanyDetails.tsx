@@ -52,7 +52,9 @@ const statusOptions = [
   { value: "processing", label: "Processing" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
-  { value: "completed", label: "Completed" },
+  { value: "damaged", label: "Damaged" },
+  { value: "complete", label: "Complete" },
+  { value: "in progress", label: "In Progress" },
 ];
 
 const companyData: CompanyData = {
@@ -243,7 +245,9 @@ function ReturnsTable({ returns }: { returns: Return[] }) {
                   onClick={(event) => {
                     event.stopPropagation();
                   }}
-                  defaultValue={returnObj.status}
+                  defaultValue={returnObj.status.toLowerCase()}
+                  size={"sm"}
+                  variant={"filled"}
                 >
                   {statusOptions.map(({ value, label }) => (
                     <option key={value} value={value}>
@@ -278,39 +282,39 @@ function EditCompanyDetails() {
               <GridItem>
                 <FormControl>
                   <FormLabel>Name</FormLabel>
-                  <Input placeholder={companyData.company.name} />
+                  <Input defaultValue={companyData.company.name} />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>Email</FormLabel>
-                  <Input placeholder={companyData.contactEmail} />
+                  <Input defaultValue={companyData.contactEmail} />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>Phone</FormLabel>
-                  <Input placeholder={companyData.contactPhone} />
+                  <Input defaultValue={companyData.contactPhone} />
                 </FormControl>
               </GridItem>
 
               <GridItem>
                 <FormControl>
                   <FormLabel>Street</FormLabel>
-                  <Input placeholder={companyData.address.street} />
+                  <Input defaultValue={companyData.address.street} />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>City</FormLabel>
-                  <Input placeholder={companyData.address.city} />
+                  <Input defaultValue={companyData.address.city} />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>State</FormLabel>
-                  <Input placeholder={companyData.address.state} />
+                  <Input defaultValue={companyData.address.state} />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>ZIP</FormLabel>
-                  <Input placeholder={companyData.address.zip} />
+                  <Input defaultValue={companyData.address.zip} />
                 </FormControl>
               </GridItem>
 
@@ -404,7 +408,7 @@ export default function CompanyDetails() {
       </Heading>
       <CompanyInformation companyData={companyData} />
       <Heading size={"md"} py={5}>
-        {`${companyData.company.name} Returns [${companyData.charities.length}]`}
+        {`${companyData.company.name} Returns [${returns.length}]`}
       </Heading>
       <ReturnsTable returns={returns} />
     </Box>
