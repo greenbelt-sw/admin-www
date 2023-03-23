@@ -30,6 +30,21 @@ import axios from "axios";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import BreadcrumbHandler from "../BreadcrumbHandler/BreadcrumbHandler";
 
+interface Return {
+  _id: {
+    $oid: any;
+  };
+  order_id: number;
+  order_date: string;
+  item_name: string;
+  item_sku: string;
+  quantity: number;
+  returned_quantity: number;
+  return_reason: string;
+  charity: string;
+  status: string;
+}
+
 const statusOptions = [
   { value: "received", label: "Received" },
   { value: "processing", label: "Processing" },
@@ -43,7 +58,7 @@ const statusOptions = [
 ];
 
 type ReturnsTableProps = {
-  returns: any[];
+  returns: Return[];
   companyData: any;
 };
 
@@ -58,6 +73,40 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
     const event = new Event("popstate");
     window.dispatchEvent(event);
   }
+
+  const toast = useToast();
+
+  const handleStatusChange = (event: any, id: string) => {
+    const status = event.target.value;
+
+    axios
+      .put(
+        `http://localhost:8080/api/v1/companies/${companyData._id.$oid}/returns/${id}`,
+        {
+          status: status,
+        }
+      )
+      .then((res) => {
+        toast({
+          title: "Status updated.",
+          description: "We've updated the status of your return.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "An error occurred.",
+          description: "We were unable to update the status of your return.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      });
+  };
   return (
     <TableContainer
       bgColor={"#fff"}
@@ -69,7 +118,7 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th>Order ID.SKU</Th>
+            <Th>Order ID</Th>
             <Th>Item</Th>
             <Th>Return Reason</Th>
             <Th isNumeric>Status</Th>
@@ -86,8 +135,12 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
               onClick={() => handleRowClick(returnObj._id.$oid)}
               key={returnObj._id.$oid}
             >
-              <Td>{returnObj.order_id + "." + returnObj.item_sku}</Td>
-              <Td>{returnObj.item_name}</Td>
+              <Td>{returnObj.order_id}</Td>
+              <Td>
+                {returnObj.item_name.length > 15
+                  ? returnObj.item_name.substring(0, 15)
+                  : returnObj.item_name}
+              </Td>
               <Td>{returnObj.return_reason}</Td>
               <Td isNumeric>
                 <Select
@@ -98,6 +151,7 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
                   defaultValue={returnObj.status.toLowerCase()}
                   size={"sm"}
                   variant={"filled"}
+                  onChange={(e) => handleStatusChange(e, returnObj._id.$oid)}
                 >
                   {statusOptions.map(({ value, label }) => (
                     <option key={value} value={value}>
