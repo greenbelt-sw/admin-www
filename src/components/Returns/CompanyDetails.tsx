@@ -37,123 +37,13 @@ const statusOptions = [
   { value: "rejected", label: "Rejected" },
   { value: "damaged", label: "Damaged" },
   { value: "complete", label: "Complete" },
+  { value: "completed", label: "Completed" },
   { value: "in progress", label: "In Progress" },
-];
-
-interface Return {
-  id: number;
-  orderId: number;
-  orderDate: string;
-  itemName: string;
-  itemSku: string;
-  quantity: number;
-  returnedQuantity: number;
-  returnReason: string;
-  charity: string;
-  status: string;
-}
-
-const returns: Return[] = [
-  {
-    id: 1,
-    orderId: 1234,
-    orderDate: "2022-03-15T12:34:56Z",
-    itemName: "Nike Air Max 90",
-    itemSku: "NKAM90-BLK",
-    quantity: 2,
-    returnedQuantity: 1,
-    returnReason: "Damaged",
-    charity: "Goodwill Industries International",
-    status: "In Progress",
-  },
-  {
-    id: 2,
-    orderId: 5678,
-    orderDate: "2022-03-10T09:12:34Z",
-    itemName: "Adidas Ultraboost 21",
-    itemSku: "ADUB21-WHT",
-    quantity: 1,
-    returnedQuantity: 1,
-    returnReason: "Wrong size",
-    charity: "The Salvation Army",
-    status: "Complete",
-  },
-  {
-    id: 3,
-    orderId: 9101,
-    orderDate: "2022-03-05T15:45:12Z",
-    itemName: "Apple iPad Pro 12.9-inch",
-    itemSku: "APDPRO129-GRY",
-    quantity: 1,
-    returnedQuantity: 1,
-    returnReason: "Defective",
-    charity: "Boys & Girls Clubs of America",
-    status: "In Progress",
-  },
-  {
-    id: 4,
-    orderId: 2468,
-    orderDate: "2022-03-02T08:30:00Z",
-    itemName: "Samsung Galaxy S21",
-    itemSku: "SGS21-BLK",
-    quantity: 1,
-    returnedQuantity: 0,
-    returnReason: "",
-    charity: "Feeding America",
-    status: "Received",
-  },
-  {
-    id: 5,
-    orderId: 1357,
-    orderDate: "2022-02-28T14:25:48Z",
-    itemName: "Canon EOS R5",
-    itemSku: "CNEOSR5-BDY",
-    quantity: 1,
-    returnedQuantity: 0,
-    returnReason: "",
-    charity: "St. Jude Children's Research Hospital",
-    status: "Received",
-  },
-  {
-    id: 6,
-    orderId: 9753,
-    orderDate: "2022-02-25T11:11:11Z",
-    itemName: "Bose QuietComfort 35 II",
-    itemSku: "BQC35II-BLK",
-    quantity: 2,
-    returnedQuantity: 2,
-    returnReason: "Changed my mind",
-    charity: "American Red Cross",
-    status: "Complete",
-  },
-  {
-    id: 7,
-    orderId: 7531,
-    orderDate: "2022-02-20T17:30:00Z",
-    itemName: "Sony PlayStation 5",
-    itemSku: "SONPS5-CON",
-    quantity: 1,
-    returnedQuantity: 1,
-    returnReason: "Defective",
-    charity: "United Way Worldwide",
-    status: "In Progress",
-  },
-  {
-    id: 8,
-    orderId: 8642,
-    orderDate: "2022-02-15T09:00:00Z",
-    itemName: "LG OLED CX Series 65-inch TV",
-    itemSku: "LGOLED65CX",
-    quantity: 1,
-    returnedQuantity: 1,
-    returnReason: "Wrong item",
-    charity: "United Way Worldwide",
-    status: "In Progress",
-  },
+  { value: "pending", label: "Pending" },
 ];
 
 type ReturnsTableProps = {
-  returns: Return[];
+  returns: any[];
   companyData: any;
 };
 
@@ -179,7 +69,7 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th>ID.Order ID</Th>
+            <Th>Order ID.SKU</Th>
             <Th>Item</Th>
             <Th>Return Reason</Th>
             <Th isNumeric>Status</Th>
@@ -193,12 +83,12 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
                 cursor: "pointer",
               }}
               transition={"background-color 0.1s ease"}
-              onClick={() => handleRowClick(returnObj.id)}
-              key={returnObj.id}
+              onClick={() => handleRowClick(returnObj._id.$oid)}
+              key={returnObj._id.$oid}
             >
-              <Td>{returnObj.id + "." + returnObj.orderId}</Td>
-              <Td>{returnObj.itemName}</Td>
-              <Td>{returnObj.returnReason}</Td>
+              <Td>{returnObj.order_id + "." + returnObj.item_sku}</Td>
+              <Td>{returnObj.item_name}</Td>
+              <Td>{returnObj.return_reason}</Td>
               <Td isNumeric>
                 <Select
                   onClick={(event) => {
@@ -478,9 +368,12 @@ export default function CompanyDetails() {
           </Heading>
           <CompanyInformation companyData={companyData} />
           <Heading size={"md"} py={5}>
-            {`Returns [${returns.length}]`}
+            {`Returns [${companyData.returns.length}]`}
           </Heading>
-          <ReturnsTable returns={returns} companyData={companyData} />
+          <ReturnsTable
+            returns={companyData.returns}
+            companyData={companyData}
+          />
         </>
       )}
     </Box>
