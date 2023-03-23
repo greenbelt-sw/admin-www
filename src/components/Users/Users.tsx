@@ -25,6 +25,7 @@ import {
   ModalFooter,
   Tooltip,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FiPlus, FiTrash } from "react-icons/fi";
@@ -323,6 +324,7 @@ function UserRow(userData: any) {
 }
 
 export default function Users() {
+  const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<[]>([]);
   const toast = useToast();
 
@@ -331,6 +333,7 @@ export default function Users() {
       .get("http://localhost:3000/api/v1/users")
       .then((res) => {
         setUsers(res.data);
+        setIsLoading(false);
       })
       .catch((err) => {
         toast({
@@ -366,16 +369,26 @@ export default function Users() {
                 <Th isNumeric>Actions</Th>
               </Tr>
             </Thead>
-            <Tbody>
-              {users.map(({ _id, name, email, role }, key) => {
-                return (
-                  <UserRow
-                    key={key}
-                    userRow={{ name, email, role, key, _id }}
-                  />
-                );
-              })}
-            </Tbody>
+            {isLoading ? (
+              <Tbody>
+                <Tr>
+                  <Td colSpan={4} textAlign={"center"}>
+                    <Spinner />
+                  </Td>
+                </Tr>
+              </Tbody>
+            ) : (
+              <Tbody>
+                {users.map(({ _id, name, email, role }, key) => {
+                  return (
+                    <UserRow
+                      key={key}
+                      userRow={{ name, email, role, key, _id }}
+                    />
+                  );
+                })}
+              </Tbody>
+            )}
           </Table>
         </TableContainer>
       </Box>

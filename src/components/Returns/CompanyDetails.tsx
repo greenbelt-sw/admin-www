@@ -23,29 +23,12 @@ import {
   SimpleGrid,
   GridItem,
   Select,
+  useToast,
+  Skeleton,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import BreadcrumbHandler from "../BreadcrumbHandler/BreadcrumbHandler";
-
-interface Charity {
-  id: number;
-  name: string;
-}
-
-interface CompanyData {
-  company: {
-    id: number;
-    name: string;
-  };
-  charities: Charity[];
-  contactEmail: string;
-  contactPhone: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  };
-}
 
 const statusOptions = [
   { value: "received", label: "Received" },
@@ -56,35 +39,6 @@ const statusOptions = [
   { value: "complete", label: "Complete" },
   { value: "in progress", label: "In Progress" },
 ];
-
-const companyData: CompanyData = {
-  company: {
-    id: 43294292,
-    name: "Greenbelt",
-  },
-  charities: [
-    {
-      id: 1,
-      name: "Local Charity A",
-    },
-    {
-      id: 2,
-      name: "Local Charity B",
-    },
-    {
-      id: 3,
-      name: "Local Charity C",
-    },
-  ],
-  contactEmail: "returns@greenbelt.com",
-  contactPhone: "(555) 555-5555",
-  address: {
-    street: "123 Main St",
-    city: "Providence",
-    state: "RI",
-    zip: "12345",
-  },
-};
 
 interface Return {
   id: number;
@@ -198,10 +152,15 @@ const returns: Return[] = [
   },
 ];
 
-function ReturnsTable({ returns }: { returns: Return[] }) {
+type ReturnsTableProps = {
+  returns: Return[];
+  companyData: any;
+};
+
+function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
   function handleRowClick(id: number): void {
     const searchParams = new URLSearchParams();
-    searchParams.append("company", companyData.company.id.toString());
+    searchParams.append("company", companyData._id.$oid.toString());
     searchParams.append("return", id.toString());
     const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
     window.history.pushState({ path: newUrl }, "", newUrl);
@@ -264,8 +223,60 @@ function ReturnsTable({ returns }: { returns: Return[] }) {
   );
 }
 
-function EditCompanyDetails() {
+function EditCompanyDetails(companyData: any) {
+  companyData = companyData.companyData;
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const formRef = useRef({
+    id: companyData._id.$oid,
+    name: companyData.name,
+    email: companyData.email,
+    phone: companyData.phone,
+    street: companyData.street,
+    city: companyData.city,
+    state: companyData.state,
+    zip: companyData.zip,
+    shopify_key: companyData.shopify_key,
+    shopify_secret: companyData.shopify_secret,
+  });
+
+  const toast = useToast();
+
+  const handleSubmit = async () => {
+    axios
+      .put("http://localhost:3000/api/v1/companies", {
+        ...formRef.current,
+      })
+      .then((res) => {
+        toast({
+          title: "Company updated.",
+          description: "We've updated your company.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+        window.location.reload();
+        onClose();
+      })
+      .catch((error) => {
+        toast({
+          title: "An error occurred.",
+          description: "We were unable to update your company.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      });
+  };
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: keyof typeof formRef.current
+  ) => {
+    formRef.current[field] = e.target.value;
+  };
 
   return (
     <>
@@ -275,65 +286,92 @@ function EditCompanyDetails() {
       <Modal isOpen={isOpen} onClose={onClose} size={"2xl"}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Editting {companyData.company.name}</ModalHeader>
+          <ModalHeader>Editting {companyData.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
               <GridItem>
                 <FormControl>
                   <FormLabel>Name</FormLabel>
-                  <Input defaultValue={companyData.company.name} />
+                  <Input
+                    defaultValue={companyData.name}
+                    onChange={(e) => handleChange(e, "name")}
+                  />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>Email</FormLabel>
-                  <Input defaultValue={companyData.contactEmail} />
+                  <Input
+                    defaultValue={companyData.email}
+                    onChange={(e) => handleChange(e, "email")}
+                  />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>Phone</FormLabel>
-                  <Input defaultValue={companyData.contactPhone} />
+                  <Input
+                    defaultValue={companyData.phone}
+                    onChange={(e) => handleChange(e, "phone")}
+                  />
                 </FormControl>
               </GridItem>
 
               <GridItem>
                 <FormControl>
                   <FormLabel>Street</FormLabel>
-                  <Input defaultValue={companyData.address.street} />
+                  <Input
+                    defaultValue={companyData.street}
+                    onChange={(e) => handleChange(e, "street")}
+                  />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>City</FormLabel>
-                  <Input defaultValue={companyData.address.city} />
+                  <Input
+                    defaultValue={companyData.city}
+                    onChange={(e) => handleChange(e, "city")}
+                  />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>State</FormLabel>
-                  <Input defaultValue={companyData.address.state} />
+                  <Input
+                    defaultValue={companyData.state}
+                    onChange={(e) => handleChange(e, "state")}
+                  />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>ZIP</FormLabel>
-                  <Input defaultValue={companyData.address.zip} />
+                  <Input
+                    defaultValue={companyData.zip}
+                    onChange={(e) => handleChange(e, "zip")}
+                  />
                 </FormControl>
               </GridItem>
 
               <GridItem>
                 <FormControl>
                   <FormLabel>Shopify API Key</FormLabel>
-                  <Input placeholder={"*******************"} />
+                  <Input
+                    placeholder={"*******************"}
+                    onChange={(e) => handleChange(e, "shopify_key")}
+                  />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>Secret Key</FormLabel>
-                  <Input placeholder={"*******************"} />
+                  <Input
+                    placeholder={"*******************"}
+                    onChange={(e) => handleChange(e, "shopify_secret")}
+                  />
                 </FormControl>
               </GridItem>
             </SimpleGrid>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="green" mr={3}>
+            <Button colorScheme="green" mr={3} onClick={handleSubmit}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>
@@ -344,7 +382,8 @@ function EditCompanyDetails() {
   );
 }
 
-function CompanyInformation({ companyData }: { companyData: CompanyData }) {
+function CompanyInformation(companyData: any) {
+  companyData = companyData.companyData;
   return (
     <TableContainer
       bgColor={"#fff"}
@@ -364,10 +403,10 @@ function CompanyInformation({ companyData }: { companyData: CompanyData }) {
         </Thead>
         <Tbody>
           <Tr>
-            <Td>{companyData.company.id}</Td>
-            <Td>{companyData.company.name}</Td>
-            <Td>{companyData.contactEmail}</Td>
-            <Td isNumeric>{companyData.contactPhone}</Td>
+            <Td>{companyData._id.$oid}</Td>
+            <Td>{companyData.name}</Td>
+            <Td>{companyData.email}</Td>
+            <Td isNumeric>{companyData.phone}</Td>
           </Tr>
         </Tbody>
       </Table>
@@ -382,10 +421,10 @@ function CompanyInformation({ companyData }: { companyData: CompanyData }) {
         </Thead>
         <Tbody>
           <Tr>
-            <Td>{companyData.address.street}</Td>
-            <Td>{companyData.address.city}</Td>
-            <Td>{companyData.address.state}</Td>
-            <Td isNumeric>{companyData.address.zip}</Td>
+            <Td>{companyData.street}</Td>
+            <Td>{companyData.city}</Td>
+            <Td>{companyData.state}</Td>
+            <Td isNumeric>{companyData.zip}</Td>
           </Tr>
         </Tbody>
       </Table>
@@ -394,23 +433,56 @@ function CompanyInformation({ companyData }: { companyData: CompanyData }) {
 }
 
 export default function CompanyDetails() {
+  const [companyData, setCompanyData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const companyId = urlSearchParams.get("company");
+
+  const toast = useToast();
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/v1/companies/" + companyId)
+      .then((res) => {
+        setCompanyData(res.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        toast({
+          title: "Error",
+          description: "Error loading company data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      });
+  }, [toast, companyId]);
+
   return (
     <Box w={"full"}>
       <BreadcrumbHandler />
-      <Heading
-        size={"md"}
-        py={1}
-        w={"full"}
-        display={"flex"}
-        justifyContent={"space-between"}
-      >
-        {`${companyData.company.name} Details`} <EditCompanyDetails />
-      </Heading>
-      <CompanyInformation companyData={companyData} />
-      <Heading size={"md"} py={5}>
-        {`${companyData.company.name} Returns [${returns.length}]`}
-      </Heading>
-      <ReturnsTable returns={returns} />
+      {isLoading ? (
+        <Skeleton>Test</Skeleton>
+      ) : (
+        <>
+          <Heading
+            size={"md"}
+            py={1}
+            w={"full"}
+            display={"flex"}
+            justifyContent={"space-between"}
+          >
+            {`Details`} <EditCompanyDetails companyData={companyData} />
+          </Heading>
+          <CompanyInformation companyData={companyData} />
+          <Heading size={"md"} py={5}>
+            {`Returns [${returns.length}]`}
+          </Heading>
+          <ReturnsTable returns={returns} companyData={companyData} />
+        </>
+      )}
     </Box>
   );
 }
