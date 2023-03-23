@@ -52,7 +52,7 @@ function AddCompany() {
 
   const handleSubmit = () => {
     axios
-      .post("http://localhost:3000/api/v1/companies", {
+      .post("http://localhost:8080/api/v1/companies", {
         company: formRef.current,
       })
       .then((res) => {
@@ -221,7 +221,7 @@ function RemoveCompany({ company }: { company: any }) {
   const toast = useToast();
   const handleRemove = () => {
     axios
-      .delete(`http://localhost:3000/api/v1/companies/${company._id.$oid}`)
+      .delete(`http://localhost:8080/api/v1/companies/${company._id.$oid}`)
       .then((res) => {
         window.location.reload();
         toast({
@@ -287,7 +287,7 @@ export default function Companies() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/companies")
+      .get("http://localhost:8080/api/v1/companies")
       .then((response) => {
         setCompanies(response.data);
         setIsLoading(false);

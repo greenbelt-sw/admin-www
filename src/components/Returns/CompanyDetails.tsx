@@ -91,6 +91,7 @@ function ReturnsTable({ returns, companyData }: ReturnsTableProps) {
               <Td>{returnObj.return_reason}</Td>
               <Td isNumeric>
                 <Select
+                  w={"max-content"}
                   onClick={(event) => {
                     event.stopPropagation();
                   }}
@@ -134,7 +135,7 @@ function EditCompanyDetails(companyData: any) {
 
   const handleSubmit = async () => {
     axios
-      .put("http://localhost:3000/api/v1/companies", {
+      .put("http://localhost:8080/api/v1/companies", {
         ...formRef.current,
       })
       .then((res) => {
@@ -333,7 +334,7 @@ export default function CompanyDetails() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/companies/" + companyId)
+      .get("http://localhost:8080/api/v1/companies/" + companyId)
       .then((res) => {
         setCompanyData(res.data);
         setIsLoading(false);

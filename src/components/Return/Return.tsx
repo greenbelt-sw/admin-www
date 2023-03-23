@@ -43,7 +43,7 @@ function Return(r: any) {
     if (e.target.value === r.status) return;
     axios
       .put(
-        `http://localhost:3000/api/v1/companies/${r.company_id}/returns/${r._id.$oid}`,
+        `http://localhost:8080/api/v1/companies/${r.company_id}/returns/${r._id.$oid}`,
         {
           status: e.target.value.toLowerCase(),
         }
@@ -74,7 +74,7 @@ function Return(r: any) {
     if (e.target.value === r.charity) return;
     axios
       .put(
-        `http://localhost:3000/api/v1/companies/${r.company_id}/returns/${r._id.$oid}`,
+        `http://localhost:8080/api/v1/companies/${r.company_id}/returns/${r._id.$oid}`,
         {
           charity: e.target.value,
         }
@@ -171,10 +171,12 @@ function Return(r: any) {
                   size={"sm"}
                   defaultValue={r.charity}
                   onBlur={handleCharityChange}
+                  w={"max-content"}
                 />
               </Td>
               <Td>
                 <Select
+                  w={"max-content"}
                   defaultValue={r.status}
                   variant={"filled"}
                   size={"sm"}
@@ -206,7 +208,7 @@ export default function ReturnDetails() {
     if (returnQuery) {
       axios
         .get(
-          `http://localhost:3000/api/v1/companies/${companyQuery}/returns/${returnQuery}`
+          `http://localhost:8080/api/v1/companies/${companyQuery}/returns/${returnQuery}`
         )
         .then((res: any) => {
           setRet(res.data);

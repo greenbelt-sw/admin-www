@@ -71,7 +71,7 @@ function AddUser() {
   const handleAddClick = () => {
     setIsLoading(true);
     axios
-      .post("http://localhost:3000/api/v1/users", {
+      .post("http://localhost:8080/api/v1/users", {
         role,
         name,
         email,
@@ -176,7 +176,7 @@ function RemoveUser(userData: any, setUsersVersion: any) {
   const handleRemoveClick = () => {
     setIsLoading(true);
     axios
-      .delete("http://localhost:3000/api/v1/users", {
+      .delete("http://localhost:8080/api/v1/users", {
         data: {
           id: userData.userData._id.$oid,
         },
@@ -260,7 +260,7 @@ function UserRow(userData: any) {
           role: role,
         };
     axios
-      .put("http://localhost:3000/api/v1/users", data)
+      .put("http://localhost:8080/api/v1/users", data)
       .then((res) => {
         toast({
           title: "User updated.",
@@ -301,6 +301,7 @@ function UserRow(userData: any) {
       </Td>
       <Td>
         <Select
+          w={"max-content"}
           defaultValue={role}
           size="sm"
           disabled={role === "administrator"}
@@ -330,7 +331,7 @@ export default function Users() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/users")
+      .get("http://localhost:8080/api/v1/users")
       .then((res) => {
         setUsers(res.data);
         setIsLoading(false);

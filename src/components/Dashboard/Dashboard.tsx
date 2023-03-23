@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/companies")
+      .get("http://localhost:8080/api/v1/companies")
       .then((response) => {
         setCompanies(response.data);
         setIsLoading(false);
